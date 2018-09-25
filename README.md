@@ -144,7 +144,7 @@ Here is a example taken from the toJSON function:
 
 # More Examples
 
-There are lot more examples/test here: ...
+There are lot more examples/test here: https://github.com/fsvieira/fsalib/blob/master/src/fsa.test.js
 
 # Use Cases 
 
