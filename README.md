@@ -1,4 +1,4 @@
-=== Finite State Automaton Library ===
+# Finite State Automaton Library
 
 Its a very simple fSA lib, with some advanced operations like:
 
@@ -16,11 +16,11 @@ Its a very simple fSA lib, with some advanced operations like:
 All operations except clean and fromJSON are non-destructive, this means that the 
 result is a new FSA and origin FSA is unchanged.
 
-=== Install === 
+# Install  
 
 `npm install fsalib --save`
 
-=== Use === 
+# Use
 
 ```javascript
     const FA = require("./fsa");
@@ -94,7 +94,7 @@ result is a new FSA and origin FSA is unchanged.
     const f = (new FA()).fromJSON(abc.toJSON());
 ```
 
-=== FA Fields ===
+# FA Fields
 
 There is no functions to walk a FA or accept a word, 
 instead you can access the FA fields directly.
@@ -142,11 +142,11 @@ Here is a example taken from the toJSON function:
     };
 ```
 
-=== More Examples ===
+# More Examples
 
-There are lot more examples/test here: ...
+There are lot more examples/test here: https://github.com/fsvieira/fsalib/blob/master/src/fsa.test.js
 
-=== Use Cases ===
+# Use Cases 
 
     The use cases of Finite State Automata are very large well known and document
     on many sources. 
