@@ -689,7 +689,7 @@ test('toJSON/fromJSON of FA abc', () => {
         ]
     });
 
-    const u = (new FA()).fromJSON(s);
+    const u = FA.fromJSON(s);
     expect(u.toDot()).toBe(
         'digraph G {\n' +
             '\trankdir=LR;\n' +
@@ -701,5 +701,59 @@ test('toJSON/fromJSON of FA abc', () => {
             '\t3 -> 4 [label = "c"]\n' +
         '}'
     );
+
+});
+
+test('FA walk of abc', () => {
+    const abc = new FA();
+
+    const s = abc.getStart();
+    const s1 = abc.newState();
+    const s2 = abc.newState();
+    const s3 = abc.newState();
+    const s4 = abc.newState();
+    const s5 = abc.newState();
+    const s6 = abc.newState();
+
+    abc.setFinal(s3);
+    abc.setFinal(s5);
+    abc.setFinal(s6);
+
+    abc.transition(s, 'a', s1);
+    abc.transition(s1, 'b', s2);
+    abc.transition(s2, 'c', s3);
+    abc.transition(s2, 'c', s4);
+    abc.transition(s3, 'd', s4);
+    abc.transition(s4, 'e', s6);
+
+
+    const step1 = abc.walk('a');
+    expect(step1.word).toEqual(['a']);
+    expect([...step1.finals]).toEqual([]);
+    expect([...step1.states]).toEqual([s1]);
+
+    const step2 = step1('b', 'c');
+    expect(step2.word).toEqual(['a', 'b', 'c']);
+    expect([...step2.finals]).toEqual([s3]);
+    expect([...step2.states]).toEqual([s3, s4]);
+
+    const step3 = step2('d')('e');
+    expect(step3.word).toEqual(['a', 'b', 'c', 'd', 'e']);
+    expect([...step3.finals]).toEqual([s6]);
+    expect([...step3.states]).toEqual([s6]);
+
+    const step4 = step3('f')('g', 'h');
+    // the last symbol on word is the one that makes it fail.
+    expect(step4.word).toEqual(["a", "b", "c", "d", "e", "f"]);
+
+    // we know it fails because there is no final states, and there is no
+    // more states to keep going.
+    expect([...step4.finals]).toEqual([]);
+    expect([...step4.states]).toEqual([]);
+
+    const w = abc.walk();
+    const accept = w('a')('b')('c');
+
+    expect(accept.finals.size).toBe(1);
 
 });

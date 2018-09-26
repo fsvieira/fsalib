@@ -516,13 +516,15 @@ class FSA {
         };
     }
 
-    fromJSON (json) {
-        this.finals = new Set(json.finals);
-        this.states = new Set(json.states);
-        this.symbols = new Set(json.symbols);
-        this.ids = json.ids;
+    static fromJSON (json) {
+        const fa = new FSA();
 
-        this.transitions = new Map();
+        fa.finals = new Set(json.finals);
+        fa.states = new Set(json.states);
+        fa.symbols = new Set(json.symbols);
+        fa.ids = json.ids;
+
+        fa.transitions = new Map();
         for (let i=0; i<json.transitions.length; i++) {
             const [from, symbolTos] = json.transitions[i];
             const s = new Map();
@@ -532,10 +534,99 @@ class FSA {
                 s.set(symbol, new Set(tos));
             }
 
-            this.transitions.set(from, s);
+            fa.transitions.set(from, s);
         }
 
-        return this;
+        return fa;
+    }
+
+    delta (symbol, froms) {
+        froms = froms || new Set([this.start]);
+
+        const r = new Set();
+        for (let from of froms) {
+            const t = this.transitions.get(from);
+
+            if (t) {
+                const tos = t.get(symbol);
+
+                if (tos) {
+                    tos.forEach(t => r.add(t));
+                }
+            }
+        }
+
+        return r;
+    }
+
+    filterFinals (froms) {
+        const r = new Set();
+
+        for (let f of froms) {
+            if (this.finals.has(f)) {
+                r.add(f);
+            }
+        }
+
+        return r;
+    }
+
+    hasFinal(froms) {
+        return this.filterFinals(froms).size > 0;
+    }
+
+    walk (...args) {
+        let froms = new Set([this.start]);
+        let word = [];
+        
+        const nothing = () => nothing;
+
+        const w = (symbol, ...args) => {
+            if (symbol && froms) {
+                word.push(symbol);
+
+                froms = this.delta(symbol, froms);
+
+                if (froms && froms.size) {
+                    if (args && args.length) {
+                        return w(...args);
+                    }    
+                }
+                else {
+                    froms = undefined;
+                }
+
+            }
+            else {
+                froms = undefined;
+            }
+
+            return p;
+        };
+
+        const handler = {
+            apply: (target, that, args) => w(...args),
+         
+            get: (obj, props) => {
+                if (props === 'finals') {
+                    return this.filterFinals(froms || new Set());
+                }
+                else if (props === 'word') {
+                    return word.slice();
+                }
+                else if (props === 'states') {
+                    return froms || new Set();
+                }
+            }
+        };
+
+        const p = new Proxy(nothing, handler);
+        
+        if (args && args.length) {
+            return w(...args);
+        }
+
+        return p;
     }
 
     toDot () {
