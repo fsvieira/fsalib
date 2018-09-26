@@ -260,7 +260,6 @@ class FSA {
             }
         }
 
-        // TODO: need to make r result!!
         const statesTable = {};
         const transitions = new Map();
 
@@ -540,7 +539,7 @@ class FSA {
         return fa;
     }
 
-    delta (symbol, froms) {
+    delta (froms, symbol) {
         froms = froms || new Set([this.start]);
 
         const r = new Set();
@@ -578,14 +577,13 @@ class FSA {
     walk (...args) {
         let froms = new Set([this.start]);
         let word = [];
-        
-        const nothing = () => nothing;
+        const self = this;
 
         const w = (symbol, ...args) => {
             if (symbol && froms) {
                 word.push(symbol);
 
-                froms = this.delta(symbol, froms);
+                froms = this.delta(froms, symbol);
 
                 if (froms && froms.size) {
                     if (args && args.length) {
@@ -601,32 +599,32 @@ class FSA {
                 froms = undefined;
             }
 
-            return p;
+            return w;
         };
 
-        const handler = {
-            apply: (target, that, args) => w(...args),
-         
-            get: (obj, props) => {
-                if (props === 'finals') {
-                    return this.filterFinals(froms || new Set());
-                }
-                else if (props === 'word') {
-                    return word.slice();
-                }
-                else if (props === 'states') {
-                    return froms || new Set();
-                }
+        Object.defineProperty(w, 'finals', {
+            get() {
+                return froms?self.filterFinals(froms):new Set();
             }
-        };
+        });
 
-        const p = new Proxy(nothing, handler);
-        
+        Object.defineProperty(w, 'states', {
+            get() {
+                return new Set([...(froms || [])]);
+            }
+        });
+
+        Object.defineProperty(w, 'word', {
+            get() {
+                return word.slice();
+            }
+        });
+
         if (args && args.length) {
             return w(...args);
         }
 
-        return p;
+        return w;
     }
 
     toDot () {

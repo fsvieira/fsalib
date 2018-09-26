@@ -704,7 +704,38 @@ test('toJSON/fromJSON of FA abc', () => {
 
 });
 
-test('FA walk of abc', () => {
+test('FA delta function on word abc', () => {
+    const abc = new FA();
+
+    const s = abc.getStart();
+    const s1 = abc.newState();
+    const s2 = abc.newState();
+    const s3 = abc.newState();
+
+    abc.setFinal(s3);
+
+    abc.transition(s, 'a', s1);
+    abc.transition(s1, 'b', s2);
+    abc.transition(s2, 'c', s3);
+
+    const froms = abc.delta(
+        abc.delta(
+            abc.delta(new Set([abc.getStart()]), 'a'),
+            'b'
+        ),
+        'c'
+    );
+
+    const finals = abc.filterFinals(froms);
+    const accepted = abc.hasFinal(froms);
+
+    expect([...froms]).toEqual([s3]);
+    expect([...finals]).toEqual([s3]);
+    expect(accepted).toBe(true);
+
+});
+
+test('FA walk of abc...', () => {
     const abc = new FA();
 
     const s = abc.getStart();
@@ -725,7 +756,6 @@ test('FA walk of abc', () => {
     abc.transition(s2, 'c', s4);
     abc.transition(s3, 'd', s4);
     abc.transition(s4, 'e', s6);
-
 
     const step1 = abc.walk('a');
     expect(step1.word).toEqual(['a']);
