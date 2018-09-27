@@ -23,10 +23,10 @@ result is a new FSA and origin FSA is unchanged.
 # Use
 
 ```javascript
-    const FA = require("./fsa");
+    const FSA = require("fsalib");
 
-    const abc = new FA();
-    const def = new FA();
+    const abc = new FSA();
+    const def = new FSA();
 
     {
         const s = abc.getStart();
@@ -91,24 +91,78 @@ result is a new FSA and origin FSA is unchanged.
 
     // deserialize from json,
     // create a copy of abc.
-    const f = (new FA()).fromJSON(abc.toJSON());
+    const f = FA.fromJSON(abc.toJSON());
+```
+# Walk Methods
+
+## delta (froms, symbol)
+
+ * froms, a set of states,
+ * symbol, the transition symbol.
+
+Example:
+```javascript
+    const FSA = require("fsalib");
+    
+    // create a abc FSA
+    const abc = new FSA();
+
+    const s = abc.getStart();
+    const s1 = abc.newState();
+    const s2 = abc.newState();
+    const s3 = abc.newState();
+
+    abc.setFinal(s3);
+
+    abc.transition(s, 'a', s1);
+    abc.transition(s1, 'b', s2);
+    abc.transition(s2, 'c', s3);
+
+    // make first transtion with delta,
+    // start from abc start state.
+    const start = abc.delta(new Set([abc.getStart()]), 'a'),
+    
+    // we can also encapsulate calls
+    const froms = abc.delta(
+        abc.delta(
+            start,
+            'b'
+        ),
+        'c'
+    );
+
+    // after getting the froms results, we can get 
+    // the finals using filterFinals.
+    const finals = abc.filterFinals(froms);
+    
+    // or if only want to know that word is accepted we can do this:
+    const accepted = abc.hasFinal(froms);
+
+    // print all abc path resulting states, in this case its the final state s3
+    console.log([...froms].join(", "));
+    
+    // print all abc path final states, in this case s3
+    console.log([...finals].join(", "));
+    
+    // print if word abc was accepted, in this case yes (true).
+    console.log(accepted);
 ```
 
 # FA Fields
 
-There is no functions to walk a FA or accept a word, 
-instead you can access the FA fields directly.
-
+If walk mehods are not engough you can access the FA fields directly.
 Here is a example taken from the toJSON function:
 
 ```javascript
+    const FSA = require("fsalib");
 
+    const fa = new FSA();
     const transitions = [];
 
     // this.transitions is a Map where key is a from state
     // and value is another Map with key as symbol and values 
     // a Set of destination states (tos).
-    for (let [from, symbols] of this.transitions) {
+    for (let [from, symbols] of fa.transitions) {
         const ss = [];
         // symbols is a Map with key symbols and value a Set of to states.
         for (let [symbol, tos] of symbols) {
@@ -121,16 +175,16 @@ Here is a example taken from the toJSON function:
 
     return {
         // Final states,
-        finals: [...this.finals],
+        finals: [...fa.finals],
         
         // all states, including final states,
-        states: [...this.states],
+        states: [...fa.states],
 
         // the start state,
         start: this.start,
 
         // Symbols the FA alphabet,
-        symbols: [...this.symbols],
+        symbols: [...fa.symbols],
 
         // FA transitions,
         transitions,
@@ -138,7 +192,7 @@ Here is a example taken from the toJSON function:
         // its the state id counter,
         // everytime a state is created we return the current ids value and 
         // increment it, for next round, messing up the ids is not a good ideia. 
-        ids: this.ids
+        ids: fa.ids
     };
 ```
 
