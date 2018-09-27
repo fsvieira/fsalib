@@ -1,14 +1,14 @@
 {
   "name": "fsalib",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
   "main": "src/fsa.js",
   "scripts": {
     "test": "jest --coverage"
   },
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/fsvieira/fsalib.git"
+    "type": "git",
+    "url": "https://github.com/fsvieira/fsalib.git"
   },
   "author": "Filipe Vieira",
   "license": "MIT",
