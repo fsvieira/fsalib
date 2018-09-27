@@ -8,7 +8,8 @@ Its a very simple fSA lib, with some advanced operations like:
  * Union,
  * Intersection,
  * Subtraction,
- * Negation
+ * Negation,
+ * walk methods (delta, hasfinals, filterFinals, walk, ...),
  * toDot,
  * fromJSON,
  * toJSON
