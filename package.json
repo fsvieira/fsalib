@@ -6,8 +6,12 @@
   "scripts": {
     "test": "jest --coverage"
   },
-  "author": "",
-  "license": "ISC",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/fsvieira/fsalib.git"
+  },
+  "author": "Filipe Vieira",
+  "license": "MIT",
   "dependencies": {
     "hash-sum": "^1.0.2",
     "identicobjects": "^1.0.2"
