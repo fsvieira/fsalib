@@ -95,7 +95,7 @@ result is a new FSA and origin FSA is unchanged.
 ```
 # Walk Methods
 
-## delta (froms, symbol)
+## delta(froms, symbol)
 
  * froms, a set of states,
  * symbol, the transition symbol.
@@ -147,6 +147,58 @@ Example:
     // print if word abc was accepted, in this case yes (true).
     console.log(accepted);
 ```
+
+## walk(symbol, ...symbol)
+
+ The walk method is a curry function, so it can receive an arbitrary number of symbols, it can 
+ also be called by steps.
+ 
+ Return: the walk function return another function, with associeted attributes finals (Set) and states (Set).
+ Words are accepted if at the end of word, states and finals are not empty.
+ 
+ 
+ Examples (consider abc as FSA accepting word abc):
+ ```javascript 
+    
+    const s = abc.walk('a', 'b', 'c');
+    console.log([...s.finals]);
+    console.log([...s.states]);
+  ```     
+  
+  ```javascript 
+    
+    const s = abc.walk('a')('b', 'c');
+    console.log([...s.finals]);
+    console.log([...s.states]);
+  ```     
+  
+  ```javascript 
+    
+    const step1 = abc.walk('a');
+    console.log([...step1.finals]); // finals is empty
+    console.log([...step1.states]); // but states is not, 
+    
+    const s = step1('a', 'b');
+    console.log([...s.finals]); // finals is not empty
+    console.log([...s.states]); // states is not empty
+  ```
+  
+  ```javascript 
+    const steps = abc.walk(); // walk can be called with no symbols,
+    // but returning function must always be called with at least one symbol.
+    const s = steps('a')('b')('c');
+    console.log([...s.finals]); // finals is not empty
+    console.log([...s.states]); // states is not empty
+ ```
+  
+```javascript 
+    const accepted = abc.walk(..."abc".split("")).finals.size > 0;
+    const rejected = abc.walk(..."abcd".split("")).finals.size === 0;
+    
+    console.log("abc is accepted: " + accepted?"yes":"no");
+    console.log("abcd is accepted: " + !rejected?"yes":"no");
+  ```
+
 
 # FA Fields
 
