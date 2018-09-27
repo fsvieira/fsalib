@@ -165,12 +165,12 @@ Example:
     console.log([...s.states]);
   ```     
   
-  ```javascript 
+```javascript 
     
     const s = abc.walk('a')('b', 'c');
     console.log([...s.finals]);
     console.log([...s.states]);
-  ```     
+```     
   
   ```javascript 
     
@@ -181,15 +181,15 @@ Example:
     const s = step1('a', 'b');
     console.log([...s.finals]); // finals is not empty
     console.log([...s.states]); // states is not empty
-  ```
+```
   
-  ```javascript 
+```javascript 
     const steps = abc.walk(); // walk can be called with no symbols,
     // but returning function must always be called with at least one symbol.
     const s = steps('a')('b')('c');
     console.log([...s.finals]); // finals is not empty
     console.log([...s.states]); // states is not empty
- ```
+```
   
 ```javascript 
     const accepted = abc.walk(..."abc".split("")).finals.size > 0;
@@ -197,7 +197,7 @@ Example:
     
     console.log("abc is accepted: " + accepted?"yes":"no");
     console.log("abcd is accepted: " + !rejected?"yes":"no");
-  ```
+```
 
 
 # FA Fields
