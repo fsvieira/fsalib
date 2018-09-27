@@ -92,7 +92,7 @@ result is a new FSA and origin FSA is unchanged.
 
     // deserialize from json,
     // create a copy of abc.
-    const f = FA.fromJSON(abc.toJSON());
+    const f = FSA.fromJSON(abc.toJSON());
 ```
 # Walk Methods
 
