@@ -613,6 +613,84 @@ test('Cycle on start state minimization', () => {
     );
 });
 
+test('Cycles sets minimization', () => {
+    const fa = new FA();
+
+    const add = sets => {
+        const start = fa.getStart();
+        const s = fa.newState();
+
+        fa.setFinal(s);
+
+        for (let i=0; i<sets.length; i++) {
+            const symbol = sets[i];
+
+            fa.transition(start, symbol, s);
+            fa.transition(s, symbol, s);
+        }
+    };
+
+    add([1, 2, 3, 4]);
+    add([2, 3]);
+    add([1, 4]);
+
+    const r = fa.minimize();
+    expect(r.toDot()).toBe(
+        'digraph G {\n' +
+            '\trankdir=LR;\n' +
+            '\tsize="8,5"\n' +
+            '\tnode [shape = doublecircle]; 5;\n' +
+            '\tnode [shape = circle];\n' +
+            '\ts -> 5 [label = "1"]\n' +
+            '\ts -> 5 [label = "2"]\n' +
+            '\ts -> 5 [label = "3"]\n' +
+            '\ts -> 5 [label = "4"]\n' +
+            '\t5 -> 5 [label = "1"]\n' +
+            '\t5 -> 5 [label = "2"]\n' +
+            '\t5 -> 5 [label = "3"]\n' +
+            '\t5 -> 5 [label = "4"]\n' +
+        '}'
+    );
+});
+
+test('Cycles sets minimization, with start as final', () => {
+    const fa = new FA();
+
+    fa.setFinal(fa.getStart());
+
+    const add = sets => {
+        const start = fa.getStart();
+        const s = fa.newState();
+
+        fa.setFinal(s);
+
+        for (let i=0; i<sets.length; i++) {
+            const symbol = sets[i];
+
+            fa.transition(start, symbol, s);
+            fa.transition(s, symbol, s);
+        }
+    };
+
+    add([1, 2, 3, 4]);
+    add([2, 3]);
+    add([1, 4]);
+
+    const r = fa.minimize();
+    expect(r.toDot()).toBe(
+        'digraph G {\n' +
+            '\trankdir=LR;\n' +
+            '\tsize="8,5"\n' +
+            '\tnode [shape = doublecircle]; s;\n' +
+            '\tnode [shape = circle];\n' +
+            '\ts -> s [label = "1"]\n' +
+            '\ts -> s [label = "2"]\n' +
+            '\ts -> s [label = "3"]\n' +
+            '\ts -> s [label = "4"]\n' +
+        '}'
+    );
+});
+
 test('Negation of FA abc', () => {
     const abc = new FA();
 

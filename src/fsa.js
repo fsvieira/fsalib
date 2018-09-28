@@ -265,7 +265,17 @@ class FSA {
 
         for (let i=0; i<p.length; i++) {
             const states = p[i];
-            const newState = states.length > 1?fa.newState():states[0];
+            let newState;
+
+            if (states.includes(fa.getStart())) {
+                newState = fa.getStart();
+            }
+            else if (states.length > 1) {
+                newState = fa.newState();
+            }
+            else {
+                newState = states[0];
+            }
 
             fa.states.add(newState);
 
