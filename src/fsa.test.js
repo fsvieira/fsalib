@@ -865,3 +865,27 @@ test('FA walk of abc...', () => {
     expect(accept.finals.size).toBe(1);
 
 });
+
+test('Get positions', () => {
+    const abc = new FA();
+
+    const s = abc.getStart();
+    const s1 = abc.newState();
+    const s2 = abc.newState();
+    const s3 = abc.newState();
+
+    abc.setFinal(s3);
+
+    abc.transition(s, 'a', s1);
+    abc.transition(s1, 'b', s2);
+    abc.transition(s1, 'c', s3);
+
+    const start = abc.positionStates(0);
+    const depthOne = abc.positionStates(1);
+    const depthTwo = abc.positionStates(2);
+
+    expect([...start]).toEqual([s]);
+    expect([...depthOne]).toEqual([s1]);
+    expect([...depthTwo]).toEqual([s2, s3]);
+
+});

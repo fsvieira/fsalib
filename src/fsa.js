@@ -637,6 +637,32 @@ class FSA {
         return w;
     }
 
+    positionStates (position) {
+        let states = [this.start];
+        
+        for (let p=0; p<position; p++) {
+            const s = new Set();
+
+            while (states.length) {
+                const state = states.pop();
+
+                const symbolTos = this.transitions.get(state);
+
+                if (symbolTos) {
+                    for (let tos of symbolTos.values()) {
+                        for (let to of tos) {
+                            s.add(to);
+                        }
+                    }
+                }
+            }
+
+            states = [...s];
+        }
+
+        return new Set(states);
+    }
+
     toDot () {
         let table = "";
         for (let [from, symbols] of this.transitions) {

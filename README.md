@@ -200,6 +200,55 @@ Example:
     console.log("abcd is accepted: " + !rejected?"yes":"no");
 ```
 
+## positionStates (position)
+
+    It will get the states on given position, where position is the walking depth 
+    of the FA, starting from start.
+
+    Returns a Set of states, if there is no states at the given position a empty Set 
+    is returned.
+
+    Example:
+```javascript
+    const FSA = require("fsalib");
+
+    const abc = new FSA();
+
+    const s = abc.getStart();
+    const s1 = abc.newState();
+    const s2 = abc.newState();
+    const s3 = abc.newState();
+
+    abc.setFinal(s3);
+
+    abc.transition(s, 'a', s1);
+    abc.transition(s1, 'b', s2);
+    abc.transition(s1, 'c', s3);
+    
+    const start = abc.positionStates(0);
+    /**
+     * the states at position 0 is the start state,
+     * we walk 0 symbols from start.
+     */
+    console.log([...start].join(", ")); // output: s
+
+    const depthOne = abc.positionStates(1);
+    /**
+     * the states at position 1, in this case are the same as
+     * walk("a"), it will return s1 state.
+     */
+    console.log([...depthOne].join(", ")); // output: s1
+
+    /**
+     * the states at position 2, in this case are the same as
+     * walk("a")("b") UNION walk("a")("c"), it will return s2 and s3 state.
+     */
+    const depthTwo = abc.positionStates(2);
+    console.log([...depthTwo].join(", ")); // output: s2, s3
+```
+
+
+
 
 # FA Fields
 
