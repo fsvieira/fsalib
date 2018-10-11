@@ -400,9 +400,6 @@ class FSA {
                             to = r.newState();
                             mapStates.set(s, to);
                             
-                            // set transitions
-                            r.transition(from, aSymbol, to);
-
                             // check and set final,
                             if (m.finals.has(aTo) && fa.finals.has(bTo)) {
                                 r.finals.add(to);
@@ -411,7 +408,9 @@ class FSA {
                             // push states to be processed,
                             states.push(s);
                         }
-                        // nothing to do.
+
+                        // set transitions
+                        r.transition(from, aSymbol, to);
                     }
                     // fa doesnt have same symbols, so nothing to do.
                 }

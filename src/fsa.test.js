@@ -551,6 +551,62 @@ test('Intersection of two FA, with same prefix acepted words', () => {
     );
 });
 
+test('Intersection with shared states', () => {
+    const a = new FA();
+    const b = new FA();
+
+    {
+        const s = a.getStart();
+        const s1 = a.newState();
+        const s2 = a.newState();
+        const s3 = a.newState();
+
+        a.setFinal(s3);
+
+        a.transition(s, 'a', s1);
+        a.transition(s1, 0, s2);
+        a.transition(s1, 1, s2);
+        a.transition(s2, 0, s3);
+        a.transition(s2, 1, s3);
+    }
+
+    {
+        const s = b.getStart();
+        const s1 = b.newState();
+        const s2 = b.newState();
+        const s3 = b.newState();
+        const s4 = b.newState();
+
+        b.setFinal(s3);
+
+        b.transition(s, 'a', s1);
+        b.transition(s1, 0, s2);
+        b.transition(s2, 0, s3);
+        
+        b.transition(s1, 1, s4);
+        b.transition(s4, 0, s3);
+        b.transition(s4, 1, s3);
+    }
+
+    const ab = a.intersect(b);
+
+    expect(ab.toDot()).toBe(
+        'digraph G {\n' +
+            '\trankdir=LR;\n' +
+            '\tsize="8,5"\n' +
+            '\tnode [shape = doublecircle]; 5;\n' +
+            '\tnode [shape = circle];\n' +
+            '\ts -> 2 [label = "a"]\n' +
+            '\t2 -> 3 [label = "0"]\n' +
+            '\t2 -> 4 [label = "1"]\n' +
+            '\t3 -> 5 [label = "0"]\n' +
+            '\t4 -> 5 [label = "0"]\n' +
+            '\t4 -> 5 [label = "1"]\n' +
+        '}'
+    );
+});
+
+
 test('Subtract: a - b = r, where a, b and r are FA.', () => {
     const a = new FA();
     const b = new FA();
