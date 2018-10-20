@@ -158,6 +158,53 @@ test('converting FA with distinct paths to words ab and ac to deterministic', ()
             '\t2 -> 4 [label = "c"]\n' +
         '}'
     );
+
+    const toStringState = (state => ad.start===state?"START":"S_" + state);
+    const toStringSymbol = ((from, symbol, to) => {
+        let level = 0;
+        do {
+            level++;
+        } while (!ad.positionStates(level).has(to));
+
+        return `${symbol} [level=${level}]`;
+    });
+
+    expect(ad.toDot({toStringState})).toBe(
+        'digraph G {\n' +
+            '\trankdir=LR;\n' +
+            '\tsize="8,5"\n' +
+            '\tnode [shape = doublecircle]; S_3 S_4;\n' +
+            '\tnode [shape = circle];\n' +
+            '\tSTART -> S_2 [label = "a"]\n' +
+            '\tS_2 -> S_3 [label = "b"]\n' +
+            '\tS_2 -> S_4 [label = "c"]\n' +
+        '}'
+    );
+
+    expect(ad.toDot({toStringSymbol})).toBe(
+        'digraph G {\n' +
+            '\trankdir=LR;\n' +
+            '\tsize="8,5"\n' +
+            '\tnode [shape = doublecircle]; 3 4;\n' +
+            '\tnode [shape = circle];\n' +
+            '\ts -> 2 [label = "a [level=1]"]\n' +
+            '\t2 -> 3 [label = "b [level=2]"]\n' +
+            '\t2 -> 4 [label = "c [level=2]"]\n' +
+        '}'
+    );
+
+    expect(ad.toDot({toStringState, toStringSymbol})).toBe(
+        'digraph G {\n' +
+            '\trankdir=LR;\n' +
+            '\tsize="8,5"\n' +
+            '\tnode [shape = doublecircle]; S_3 S_4;\n' +
+            '\tnode [shape = circle];\n' +
+            '\tSTART -> S_2 [label = "a [level=1]"]\n' +
+            '\tS_2 -> S_3 [label = "b [level=2]"]\n' +
+            '\tS_2 -> S_4 [label = "c [level=2]"]\n' +
+        '}'
+    );
+
 });
 
 test('converting FA with words sets to deterministic', () => {

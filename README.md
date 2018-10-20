@@ -94,6 +94,91 @@ result is a new FSA and origin FSA is unchanged.
     // create a copy of abc.
     const f = FSA.fromJSON(abc.toJSON());
 ```
+
+## More toDot() options
+
+The method toDot can receive one object argument to override how symbol and states are converted to strings.
+
+Example: 
+
+```
+    const a = new FA();
+
+    const s = a.getStart();
+    const s1 = a.newState();
+    const s2 = a.newState();
+    const s3 = a.newState();
+    const s4 = a.newState();
+
+    a.setFinal(s2);
+    a.setFinal(s4);
+
+    a.transition(s, 'a', s1);
+    a.transition(s1, 'b', s2);
+
+    a.transition(s, 'a', s3);
+    a.transition(s3, 'c', s4);
+
+    const ad = a.deterministic();
+
+    // Create toString functions,
+
+    /* toStringState:
+        The function receives a state as argument.
+
+        We are goint to rewrite start state as "START", all other states will be 
+        prefixed with "S_".
+     */ 
+    const toStringState = (state => ad.start===state?"START":"S_" + state);
+
+    /* toStringSymbol:
+        The function receives as arguments:
+            * the transition from state,
+            * the transition symbol,
+            * the transition to state.
+
+        we are going to atach to each symbol->to the information of 
+        the minium level of to state.        
+    */
+    const toStringSymbol = ((from, symbol, to) => {
+        let level = 0;
+        do {
+            level++;
+        } while (!ad.positionStates(level).has(to));
+
+        return `${symbol} [level=${level}]`;
+    });
+
+    // now we call toDot with both functions (or with just one function),
+    console.log(
+        ad.toDot(
+            // if a function one or the two functions are not provided then it will use the default.
+            {
+                toStringState,
+                toStringSymbol
+            }
+        )
+    );
+
+    /*
+        This should print something like this:
+
+        digraph G {
+            rankdir=LR;
+            size="8,5"
+            node [shape = doublecircle]; S_3 S_4;
+            node [shape = circle];
+            START -> S_2 [label = "a [level=1]"]
+            S_2 -> S_3 [label = "b [level=2]"]
+            S_2 -> S_4 [label = "c [level=2]"]
+        }
+
+        You can check it with this website: https://dreampuf.github.io/GraphvizOnline/
+    */
+
+```
+
+
 # Walk Methods
 
 ## delta(froms, symbol)

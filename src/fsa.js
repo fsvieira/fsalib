@@ -662,23 +662,28 @@ class FSA {
         return new Set(states);
     }
 
-    toDot () {
+    toDot (toString) {
+        const {
+            toStringState=(s => s===this.start?"s":s), 
+            toStringSymbol=((f, s, t) => s)
+        } = toString || {};
+
         let table = "";
         for (let [from, symbols] of this.transitions) {
-            const f = from === this.start?"s":from;
+            const f = toStringState(from);
 
             for (let [symbol, tos] of symbols) {
                 for (let to of tos) {
-                    const t = to === this.start?"s":to;
+                    const t = toStringState(to);
 
-                    table += `\t${f} -> ${t} [label = "${symbol}"]\n`;
+                    table += `\t${f} -> ${t} [label = "${toStringSymbol(from, symbol, to)}"]\n`;
                 }
             }
         }
 
         let finals = "";
         for (let final of this.finals) {
-            finals += " " + (final===this.start?"s":final);
+            finals += " " + (toStringState(final));
         }
 
         const g = 'digraph G {\n' +
