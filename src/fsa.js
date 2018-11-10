@@ -326,7 +326,7 @@ class FSA {
         fa = fa.minimize();
 
         // we need the full symbols set,
-        u.symbols = new Set(...this.symbols, ...fa.symbols);
+        u.symbols = new Set([...this.symbols, ...fa.symbols]);
 
         const translationTable = new Map([[u.getStart(), fa.getStart()]]);
         const tt = state => {
